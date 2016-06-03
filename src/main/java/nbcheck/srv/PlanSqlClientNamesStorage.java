@@ -26,9 +26,10 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
 
     public static final String NETBIOS_KEY_SELECT_SQL = "netbios.sql.stmt.select",
             NETBIOS_KEY_SELECT_ALL_SQL = "netbios.sql.stmt.select.all",
-            NETBIOS_KEY_UPDATE_SQL = "netbios.sql.stmt.update";
+            NETBIOS_KEY_DELETE_SQL = "netbios.sql.stmt.delete",
+            NETBIOS_KEY_INSERT_SQL = "netbios.sql.stmt.insert";
 
-    private String selectSQL, selectAllSQL, updateSQL;
+    private String selectSQL, selectAllSQL, deleteSQL, insertSQL;
 
     @Resource(lookup = "java:jboss/datasources/nbcheckDS")
     DataSource dataSource;
@@ -38,6 +39,11 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
     @Override
     public List<String> getClientsIPAddresses() throws ClientNamesStorageException {
         return getClientsIPAddresses(selectSQL);
+    }
+
+    @Override
+    public List<String> getAllClientsIPAddresses() throws ClientNamesStorageException {
+        return getClientsIPAddresses(selectAllSQL);
     }
 
     public List<String> getClientsIPAddresses(String aSelectSQL) throws ClientNamesStorageException {
@@ -69,13 +75,13 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public int updateClientNames(Map<String, String> clientAddressToNameMap) throws ClientNamesStorageException {
+    public int updateClientNames(Map<String, List<String>> clientAddressToNamesMap) throws ClientNamesStorageException {
 
         if (initEx != null) {
             throw new ClientNamesStorageException(initEx.getMessage(), initEx);
         }
 
-        if ((clientAddressToNameMap == null) || (clientAddressToNameMap.isEmpty())) {
+        if ((clientAddressToNamesMap == null) || (clientAddressToNamesMap.isEmpty())) {
             return 0;
         }
 
@@ -83,15 +89,26 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
 
             conn.setAutoCommit(false);
 
-            try (PreparedStatement stmt = conn.prepareStatement(updateSQL);) {
+            try (PreparedStatement delStmt = conn.prepareStatement(deleteSQL);
+                    PreparedStatement insStmt = conn.prepareStatement(insertSQL);) {
 
-                for (String address : clientAddressToNameMap.keySet()) {
-                    stmt.setString(1, clientAddressToNameMap.get(address)); //set host name
-                    stmt.setString(2, address); //where clause
-                    stmt.addBatch();
+                for (String address : clientAddressToNamesMap.keySet()) {
+
+                    delStmt.setString(1, address);
+                    delStmt.addBatch();
+
+                    for (String nbName : clientAddressToNamesMap.get(address)) {
+                        insStmt.setString(1, address);
+                        insStmt.setString(2, nbName);
+                        insStmt.addBatch();
+                    }
+
                 }
 
-                int[] i = stmt.executeBatch();
+                delStmt.executeBatch();
+
+                int[] i = insStmt.executeBatch();
+
                 conn.commit();
 
                 int rows = 0;
@@ -106,13 +123,13 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
                 if (!conn.isClosed()) {
                     conn.rollback();
                 }
-                throw new ClientNamesStorageException("ClientNamesStorageException while executing "
-                        + updateSQL + " :" + ex.getMessage(), ex);
+                throw new ClientNamesStorageException("ClientNamesStorageException while executing updateClientNames: "
+                        + ex.getMessage(), ex);
             }
 
         } catch (SQLException connEx) {
-            throw new ClientNamesStorageException("ClientNamesStorageException unable open jdbc connection "
-                    + updateSQL, connEx);
+            throw new ClientNamesStorageException("ClientNamesStorageException unable open jdbc connection ",
+                    connEx);
         }
 
     }
@@ -125,7 +142,8 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
         try {
             selectSQL = Utils.tryPropertyNotEmpty(NETBIOS_KEY_SELECT_SQL);
             selectAllSQL = Utils.tryPropertyNotEmpty(NETBIOS_KEY_SELECT_ALL_SQL);
-            updateSQL = Utils.tryPropertyNotEmpty(NETBIOS_KEY_UPDATE_SQL);
+            deleteSQL = Utils.tryPropertyNotEmpty(NETBIOS_KEY_DELETE_SQL);
+            insertSQL = Utils.tryPropertyNotEmpty(NETBIOS_KEY_INSERT_SQL);
         } catch (IOException ex) {
             initEx = ex;
             Logger.getLogger(PlanSqlClientNamesStorage.class
@@ -133,11 +151,6 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
                             "could not get PlanSqlClientAddressStorage property from cfg file: {0}",
                             ex.getMessage());
         }
-    }
-
-    @Override
-    public List<String> getAllClientsIPAddresses() throws ClientNamesStorageException {
-        return getClientsIPAddresses(selectAllSQL);
     }
 
 }

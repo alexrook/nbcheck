@@ -1,0 +1,4 @@
+db.host=localhost:7777
+db.name=syslog-squid-db
+db.username=syslog
+db.password=

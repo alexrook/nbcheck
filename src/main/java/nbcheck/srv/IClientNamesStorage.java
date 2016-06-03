@@ -21,6 +21,6 @@ public interface IClientNamesStorage {
 
     List<String> getAllClientsIPAddresses() throws ClientNamesStorageException;
 
-    int updateClientNames(Map<String, String> clientIPAddressToNameMap) throws ClientNamesStorageException;
+    int updateClientNames(Map<String, List<String>> clientIPAddressToNamesMap) throws ClientNamesStorageException;
 
 }

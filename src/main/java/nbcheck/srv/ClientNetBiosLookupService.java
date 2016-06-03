@@ -2,6 +2,7 @@ package nbcheck.srv;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import jcifs.netbios.NbtAddress;
 
 /**
  * @author moroz
@@ -28,13 +30,15 @@ public class ClientNetBiosLookupService {
     ErrorService errors;
 
     /**
-     * По расписанию, из clientNamesStorage, берет список ip-адресов для
-     * которых не указаны NetBIOS-имена, и пытается разрешить их.
-     * Сохраняет разрешенные имена в clientNamesStorage
+     * По расписанию, из clientNamesStorage, берет список ip-адресов для которых
+     * не указаны NetBIOS-имена, и пытается разрешить их. Сохраняет разрешенные
+     * имена в clientNamesStorage
      *
      */
     @Schedule(dayOfWeek = "*", //see http://docs.oracle.com/javaee/6/tutorial/doc/bnboy.html
-            hour = "3",
+            hour = "*",
+            minute = "*/3",
+            second = "1",
             persistent = false)
     public void lookupNBNames() {
 
@@ -55,12 +59,14 @@ public class ClientNetBiosLookupService {
     /**
      *
      * Для синхронизации с NetBIOS. По расписанию, из clientNamesStorage, берет
-     * список всех ip-адресов и пытается разрешить их. Сохраняет
-     * разрешенные имена в clientNamesStorage.
+     * список всех ip-адресов и пытается разрешить их. Сохраняет разрешенные
+     * имена в clientNamesStorage.
      *
      */
-    @Schedule(dayOfWeek = "5",
-            hour = "23",
+    @Schedule(dayOfWeek = "*",
+            hour = "*",
+            minute = "*/5",
+            second = "1",
             persistent = false)
     public void updateAllAddresses() {
 
@@ -79,17 +85,23 @@ public class ClientNetBiosLookupService {
 
     }
 
-    private Map<String, String> lookupNetBIOS(List<String> clientAddresses) {
-        Map<String, String> updatedCliAddrs = new HashMap<>();
+    private Map<String, List<String>> lookupNetBIOS(List<String> clientAddresses) {
+        Map<String, List<String>> updatedCliAddrs = new HashMap<>();
         for (String address : clientAddresses) {
 
             try {
 
-                InetAddress ia = InetAddress.getByName(address);
+                NbtAddress[] aa = NbtAddress.getAllByAddress(address);
 
-                if (!address.equalsIgnoreCase(ia.getCanonicalHostName())) {
-                    updatedCliAddrs.put(address, ia.getCanonicalHostName());
+                List<String> names = new ArrayList<>();
+
+                for (NbtAddress na : aa) {
+                    if (!address.equalsIgnoreCase(na.getHostName())) {
+                        names.add(na.getHostName());
+                    }
                 }
+
+                updatedCliAddrs.put(address, names);
 
             } catch (UnknownHostException ex) {
                 String msg = "unknown host exception for address:" + address;
