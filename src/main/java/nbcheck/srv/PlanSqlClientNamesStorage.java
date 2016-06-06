@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -37,28 +37,29 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
     Exception initEx = null;
 
     @Override
-    public List<String> getClientsIPAddresses() throws ClientNamesStorageException {
+    public Map<Integer, String> getClientsIPAddresses() throws ClientNamesStorageException {
         return getClientsIPAddresses(selectSQL);
     }
 
     @Override
-    public List<String> getAllClientsIPAddresses() throws ClientNamesStorageException {
+    public Map<Integer, String> getAllClientsIPAddresses() throws ClientNamesStorageException {
         return getClientsIPAddresses(selectAllSQL);
     }
 
-    public List<String> getClientsIPAddresses(String aSelectSQL) throws ClientNamesStorageException {
+    public Map<Integer, String> getClientsIPAddresses(String aSelectSQL)
+            throws ClientNamesStorageException {
 
         if (initEx != null) {
             throw new ClientNamesStorageException(initEx.getMessage(), initEx);
         }
 
-        List<String> ret = new ArrayList(150);
+        Map<Integer, String> ret = new HashMap<>(150);
         try (Connection conn = dataSource.getConnection()) {
             try (PreparedStatement stmt = conn.prepareStatement(aSelectSQL);) {
 
                 ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
-                    ret.add(rs.getString(1));
+                    ret.put(rs.getInt(1), rs.getString(2));
                 }
 
             } catch (SQLException ex) {
@@ -75,13 +76,14 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public int updateClientNames(Map<String, List<String>> clientAddressToNamesMap) throws ClientNamesStorageException {
+    public int updateClientNames(Map<Integer, List<String>> clientAddressIdToNamesMap)
+            throws ClientNamesStorageException {
 
         if (initEx != null) {
             throw new ClientNamesStorageException(initEx.getMessage(), initEx);
         }
 
-        if ((clientAddressToNamesMap == null) || (clientAddressToNamesMap.isEmpty())) {
+        if ((clientAddressIdToNamesMap == null) || (clientAddressIdToNamesMap.isEmpty())) {
             return 0;
         }
 
@@ -92,14 +94,14 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
             try (PreparedStatement delStmt = conn.prepareStatement(deleteSQL);
                     PreparedStatement insStmt = conn.prepareStatement(insertSQL);) {
 
-                for (String address : clientAddressToNamesMap.keySet()) {
+                for (int id : clientAddressIdToNamesMap.keySet()) {
 
-                    delStmt.setString(1, address);
+                    delStmt.setInt(1, id);
                     delStmt.addBatch();
 
-                    for (String nbName : clientAddressToNamesMap.get(address)) {
-                        insStmt.setString(1, nbName);
-                        insStmt.setString(2, address);
+                    for (String nbName : clientAddressIdToNamesMap.get(id)) {
+                        insStmt.setInt(1, id);
+                        insStmt.setString(2, nbName);
                         insStmt.addBatch();
                     }
 
@@ -117,7 +119,7 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
                     rows = rows + k;
                 }
 
-                return rows;
+                return rows; //TODO
 
             } catch (SQLException ex) {
                 if (!conn.isClosed()) {

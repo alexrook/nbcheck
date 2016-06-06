@@ -1,6 +1,5 @@
 package nbcheck.srv;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,17 +44,21 @@ public class ClientNetBiosLookupService {
 
         Logger.getLogger(ClientNetBiosLookupService.class
                 .getName()).log(Level.INFO, "updating NetBIOS addresses ...");
-        
+
         try {
-            List<String> clientIPAddresses = clientNamesStorage.getClientsIPAddresses();
+            Map<Integer, String> clientIPAddresses = clientNamesStorage.getClientsIPAddresses();
+
             int rows = clientNamesStorage.updateClientNames(lookupNetBIOS(clientIPAddresses));
+
             Logger.getLogger(ClientNetBiosLookupService.class
                     .getName()).log(Level.INFO, "updated {0} clients addresses", rows);
+
         } catch (IClientNamesStorage.ClientNamesStorageException ex) {
             String msg = "ClientNamesStorageException, check app configuration";
             errors.addError("ClientNamesStorageException",
                     ex);
-            Logger.getLogger(ClientNetBiosLookupService.class.getName()).log(Level.SEVERE, msg + ": {0}", ex.getMessage());
+            Logger.getLogger(ClientNetBiosLookupService.class.getName())
+                    .log(Level.SEVERE, msg + ": {0}", ex.getMessage());
         }
 
     }
@@ -63,8 +66,8 @@ public class ClientNetBiosLookupService {
     /**
      *
      * Для синхронизации с NetBIOS. По расписанию, из clientNamesStorage, берет
-     * список всех ip-адресов и пытается разрешить их. Сохраняет разрешенные
-     * имена в clientNamesStorage.
+     * список всех ip-адресов и пытается разрешить их через NetBIOS BCAST (see
+     * init). Сохраняет разрешенные имена в clientNamesStorage.
      *
      */
     @Schedule(dayOfWeek = "*",
@@ -72,16 +75,19 @@ public class ClientNetBiosLookupService {
             minute = "*/5",
             second = "1",
             persistent = false)
-    public void updateAllAddresses() {
-        
+    public void updateAllNames() {
+
         Logger.getLogger(ClientNetBiosLookupService.class
-                .getName()).log(Level.INFO, "updating all NetBIOS addresses ...");
+                .getName()).log(Level.INFO, "updating all NetBIOS names ...");
 
         try {
-            List<String> clientAddresses = clientNamesStorage.getAllClientsIPAddresses();
+            Map<Integer, String> clientAddresses = clientNamesStorage.getAllClientsIPAddresses();
+
             int rows = clientNamesStorage.updateClientNames(lookupNetBIOS(clientAddresses));
+
             Logger.getLogger(ClientNetBiosLookupService.class
-                    .getName()).log(Level.INFO, "updated {0} all clients addresses", rows);
+                    .getName()).log(Level.INFO, "updated {0} all clients names", rows);
+
         } catch (IClientNamesStorage.ClientNamesStorageException ex) {
             String msg = "ClientNamesStorageException, check app configuration";
             errors.addError("ClientNamesStorageException",
@@ -92,9 +98,13 @@ public class ClientNetBiosLookupService {
 
     }
 
-    private Map<String, List<String>> lookupNetBIOS(List<String> clientAddresses) {
-        Map<String, List<String>> updatedCliAddrs = new HashMap<>();
-        for (String address : clientAddresses) {
+    private Map<Integer, List<String>> lookupNetBIOS(Map<Integer, String> clientAddresses) {
+
+        Map<Integer, List<String>> updatedCliAddrs = new HashMap<>();
+
+        for (int id : clientAddresses.keySet()) {
+
+            String address = clientAddresses.get(id);
 
             try {
 
@@ -104,11 +114,11 @@ public class ClientNetBiosLookupService {
 
                 for (NbtAddress na : aa) {
                     if (!address.equalsIgnoreCase(na.getHostName())) {
-                        names.add(na.getHostName());
+                        names.add(na.getHostName());//TODO: add only unique names 
                     }
                 }
 
-                updatedCliAddrs.put(address, names);
+                updatedCliAddrs.put(id, names);
 
             } catch (UnknownHostException ex) {
                 String msg = "unknown host exception for address:" + address;

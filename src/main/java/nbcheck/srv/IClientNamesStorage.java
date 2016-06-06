@@ -17,10 +17,10 @@ public interface IClientNamesStorage {
 
     }
 
-    List<String> getClientsIPAddresses() throws ClientNamesStorageException;
+    Map<Integer,String> getClientsIPAddresses() throws ClientNamesStorageException;
 
-    List<String> getAllClientsIPAddresses() throws ClientNamesStorageException;
+    Map<Integer,String> getAllClientsIPAddresses() throws ClientNamesStorageException;
 
-    int updateClientNames(Map<String, List<String>> clientIPAddressToNamesMap) throws ClientNamesStorageException;
+    int updateClientNames(Map<Integer, List<String>> clientAddressIdToNamesMap) throws ClientNamesStorageException;
 
 }
