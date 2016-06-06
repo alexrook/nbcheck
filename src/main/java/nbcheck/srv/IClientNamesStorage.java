@@ -3,6 +3,7 @@ package nbcheck.srv;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author moroz
@@ -17,10 +18,11 @@ public interface IClientNamesStorage {
 
     }
 
-    Map<Integer,String> getClientsIPAddresses() throws ClientNamesStorageException;
+    Map<Integer, String> getClientsIPAddresses() throws ClientNamesStorageException;
 
-    Map<Integer,String> getAllClientsIPAddresses() throws ClientNamesStorageException;
+    Map<Integer, String> getAllClientsIPAddresses() throws ClientNamesStorageException;
 
-    int updateClientNames(Map<Integer, List<String>> clientAddressIdToNamesMap) throws ClientNamesStorageException;
+    int updateClientNames(Map<Integer, Set<String>> clientAddressIdToNamesMap)
+            throws ClientNamesStorageException;
 
 }

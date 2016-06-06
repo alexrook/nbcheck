@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -76,7 +77,7 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public int updateClientNames(Map<Integer, List<String>> clientAddressIdToNamesMap)
+    public int updateClientNames(Map<Integer, Set<String>> clientAddressIdToNamesMap)
             throws ClientNamesStorageException {
 
         if (initEx != null) {

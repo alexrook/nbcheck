@@ -3,8 +3,10 @@ package nbcheck.srv;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -98,9 +100,9 @@ public class ClientNetBiosLookupService {
 
     }
 
-    private Map<Integer, List<String>> lookupNetBIOS(Map<Integer, String> clientAddresses) {
+    private Map<Integer, Set<String>> lookupNetBIOS(Map<Integer, String> clientAddresses) {
 
-        Map<Integer, List<String>> updatedCliAddrs = new HashMap<>();
+        Map<Integer, Set<String>> updatedCliAddrs = new HashMap<>();
 
         for (int id : clientAddresses.keySet()) {
 
@@ -110,11 +112,11 @@ public class ClientNetBiosLookupService {
 
                 NbtAddress[] aa = NbtAddress.getAllByAddress(address);
 
-                List<String> names = new ArrayList<>();
+                Set<String> names = new HashSet<>();
 
                 for (NbtAddress na : aa) {
                     if (!address.equalsIgnoreCase(na.getHostName())) {
-                        names.add(na.getHostName());//TODO: add only unique names 
+                        names.add(na.getHostName());
                     }
                 }
 
