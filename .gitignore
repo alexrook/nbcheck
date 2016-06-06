@@ -9,6 +9,9 @@ nbactions.xml
 .nb-gradle/
 private/
 
+#IdeaC
+.idea/
+
 ### Gradle ###
 .gradle
 build/

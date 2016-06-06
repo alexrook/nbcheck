@@ -139,6 +139,8 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
 
     @PostConstruct
     public void init() {
+
+               jcifs.Config.setProperty( "jcifs.netbios.wins", "192.168.1.220" );
         try {
             selectSQL = Utils.tryPropertyNotEmpty(NETBIOS_KEY_SELECT_SQL);
             selectAllSQL = Utils.tryPropertyNotEmpty(NETBIOS_KEY_SELECT_ALL_SQL);
