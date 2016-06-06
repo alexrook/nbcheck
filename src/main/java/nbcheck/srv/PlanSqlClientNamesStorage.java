@@ -98,8 +98,8 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
                     delStmt.addBatch();
 
                     for (String nbName : clientAddressToNamesMap.get(address)) {
-                        insStmt.setString(1, address);
-                        insStmt.setString(2, nbName);
+                        insStmt.setString(1, nbName);
+                        insStmt.setString(2, address);
                         insStmt.addBatch();
                     }
 
@@ -139,8 +139,6 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
 
     @PostConstruct
     public void init() {
-
-               jcifs.Config.setProperty( "jcifs.netbios.wins", "192.168.1.220" );
         try {
             selectSQL = Utils.tryPropertyNotEmpty(NETBIOS_KEY_SELECT_SQL);
             selectAllSQL = Utils.tryPropertyNotEmpty(NETBIOS_KEY_SELECT_ALL_SQL);

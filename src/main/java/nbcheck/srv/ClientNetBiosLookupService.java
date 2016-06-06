@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
@@ -42,6 +43,9 @@ public class ClientNetBiosLookupService {
             persistent = false)
     public void lookupNBNames() {
 
+        Logger.getLogger(ClientNetBiosLookupService.class
+                .getName()).log(Level.INFO, "updating NetBIOS addresses ...");
+        
         try {
             List<String> clientIPAddresses = clientNamesStorage.getClientsIPAddresses();
             int rows = clientNamesStorage.updateClientNames(lookupNetBIOS(clientIPAddresses));
@@ -69,6 +73,9 @@ public class ClientNetBiosLookupService {
             second = "1",
             persistent = false)
     public void updateAllAddresses() {
+        
+        Logger.getLogger(ClientNetBiosLookupService.class
+                .getName()).log(Level.INFO, "updating all NetBIOS addresses ...");
 
         try {
             List<String> clientAddresses = clientNamesStorage.getAllClientsIPAddresses();
@@ -116,4 +123,8 @@ public class ClientNetBiosLookupService {
 
     }
 
+    @PostConstruct
+    public void init() {
+        jcifs.Config.setProperty("jcifs.resolveOrder", "BCAST");
+    }
 }

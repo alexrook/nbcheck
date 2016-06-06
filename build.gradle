@@ -1,8 +1,10 @@
 import org.apache.tools.ant.filters.*
 
-apply plugin: 'war'
+plugins {
+  id "war"
+}
 
-sourceCompatibility = '1.8'
+sourceCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 repositories {
@@ -10,9 +12,9 @@ repositories {
 }
 
 dependencies {
-    compile 'javax:javaee-api:7.0'
+    providedCompile 'javax:javaee-api:7.0'
     compile 'org.codelibs:jcifs:1.3.18.1'
-    compile 'org.codelibs:jcifs:1.3.18.1:javadoc'
+    providedCompile 'org.codelibs:jcifs:1.3.18.1:javadoc'
     testCompile 'junit:junit:4.10'
 }
 
