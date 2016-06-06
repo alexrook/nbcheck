@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -120,7 +119,7 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
                     rows = rows + k;
                 }
 
-                return rows; //TODO
+                return rows; 
 
             } catch (SQLException ex) {
                 if (!conn.isClosed()) {

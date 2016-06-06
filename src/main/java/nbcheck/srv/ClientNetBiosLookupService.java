@@ -1,10 +1,8 @@
 package nbcheck.srv;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -50,10 +48,13 @@ public class ClientNetBiosLookupService {
         try {
             Map<Integer, String> clientIPAddresses = clientNamesStorage.getClientsIPAddresses();
 
-            int rows = clientNamesStorage.updateClientNames(lookupNetBIOS(clientIPAddresses));
+            Map<Integer, Set<String>> updatedClientAddresses = lookupNetBIOS(clientIPAddresses);
+
+            int rows = clientNamesStorage.updateClientNames(updatedClientAddresses);
 
             Logger.getLogger(ClientNetBiosLookupService.class
-                    .getName()).log(Level.INFO, "updated {0} clients addresses", rows);
+                    .getName()).log(Level.INFO, "updated {0} clients addresses with {1} netbios names",
+                            new Object[]{updatedClientAddresses.size(), rows});
 
         } catch (IClientNamesStorage.ClientNamesStorageException ex) {
             String msg = "ClientNamesStorageException, check app configuration";
@@ -85,10 +86,13 @@ public class ClientNetBiosLookupService {
         try {
             Map<Integer, String> clientAddresses = clientNamesStorage.getAllClientsIPAddresses();
 
-            int rows = clientNamesStorage.updateClientNames(lookupNetBIOS(clientAddresses));
+            Map<Integer, Set<String>> updatedClientAddresses = lookupNetBIOS(clientAddresses);
+
+            int rows = clientNamesStorage.updateClientNames(updatedClientAddresses);
 
             Logger.getLogger(ClientNetBiosLookupService.class
-                    .getName()).log(Level.INFO, "updated {0} all clients names", rows);
+                    .getName()).log(Level.INFO, "updated {0} all clients names with {1} names",
+                            new Object[]{updatedClientAddresses.size(), rows});
 
         } catch (IClientNamesStorage.ClientNamesStorageException ex) {
             String msg = "ClientNamesStorageException, check app configuration";
