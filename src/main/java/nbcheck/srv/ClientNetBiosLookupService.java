@@ -36,9 +36,7 @@ public class ClientNetBiosLookupService {
      *
      */
     @Schedule(dayOfWeek = "*", //see http://docs.oracle.com/javaee/6/tutorial/doc/bnboy.html
-            hour = "*",
-            minute = "*/3",
-            second = "1",
+            hour = "11",
             persistent = false)
     public void lookupNBNames() {
 
@@ -73,10 +71,8 @@ public class ClientNetBiosLookupService {
      * init). Сохраняет разрешенные имена в clientNamesStorage.
      *
      */
-    @Schedule(dayOfWeek = "*",
-            hour = "*",
-            minute = "*/5",
-            second = "1",
+    @Schedule(dayOfWeek = "3",
+            hour = "9",
             persistent = false)
     public void updateAllNames() {
 
