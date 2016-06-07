@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     providedCompile 'javax:javaee-api:7.0'
-    compile 'org.codelibs:jcifs:1.3.18.1'
+    providedCompile 'org.codelibs:jcifs:1.3.18.1'
     providedCompile 'org.codelibs:jcifs:1.3.18.1:javadoc'
     testCompile 'junit:junit:4.10'
 }
