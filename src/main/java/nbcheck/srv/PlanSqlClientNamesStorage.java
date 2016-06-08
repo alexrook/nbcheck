@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -26,10 +27,11 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
 
     public static final String NETBIOS_KEY_SELECT_SQL = "netbios.sql.stmt.select",
             NETBIOS_KEY_SELECT_ALL_SQL = "netbios.sql.stmt.select.all",
+            NETBIOS_KEY_SELECT_IGNORES_SQL = "netbios.sql.stmt.select.ignores",
             NETBIOS_KEY_DELETE_SQL = "netbios.sql.stmt.delete",
             NETBIOS_KEY_INSERT_SQL = "netbios.sql.stmt.insert";
-
-    private String selectSQL, selectAllSQL, deleteSQL, insertSQL;
+            
+        private String selectSQL, selectAllSQL, selectIgnoresSQL, deleteSQL, insertSQL;
 
     @Resource(lookup = "java:jboss/datasources/nbcheckDS")
     DataSource dataSource;
@@ -38,15 +40,15 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
 
     @Override
     public Map<Integer, String> getClientsIPAddresses() throws ClientNamesStorageException {
-        return getClientsIPAddresses(selectSQL);
+        return getQueryMap(selectSQL);
     }
 
     @Override
     public Map<Integer, String> getAllClientsIPAddresses() throws ClientNamesStorageException {
-        return getClientsIPAddresses(selectAllSQL);
+        return getQueryMap(selectAllSQL);
     }
 
-    public Map<Integer, String> getClientsIPAddresses(String aSelectSQL)
+    public Map<Integer, String> getQueryMap(String aSelectSQL)
             throws ClientNamesStorageException {
 
         if (initEx != null) {
@@ -87,6 +89,8 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
             return 0;
         }
 
+        Collection<String> ignoredNames = getIgnoredNames();
+
         try (Connection conn = dataSource.getConnection()) {
 
             conn.setAutoCommit(false);
@@ -100,9 +104,11 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
                     delStmt.addBatch();
 
                     for (String nbName : clientAddressIdToNamesMap.get(id)) {
-                        insStmt.setInt(1, id);
-                        insStmt.setString(2, nbName);
-                        insStmt.addBatch();
+                        if (!isIgnoredName(nbName, ignoredNames)){
+                            insStmt.setInt(1, id);
+                            insStmt.setString(2, nbName);
+                            insStmt.addBatch();
+                        } 
                     }
 
                 }
@@ -119,7 +125,7 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
                     rows = rows + k;
                 }
 
-                return rows; 
+                return rows;
 
             } catch (SQLException ex) {
                 if (!conn.isClosed()) {
@@ -136,6 +142,28 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
 
     }
 
+    public Collection<String> getIgnoredNames() throws ClientNamesStorageException {
+
+        if ((selectIgnoresSQL != null) && (!selectIgnoresSQL.isEmpty())) {
+            return getQueryMap(selectIgnoresSQL).values();
+        }
+
+        return null;
+    }
+
+    private boolean isIgnoredName(String name, Collection<String> ignoredNames) {
+     
+        if ((ignoredNames != null) && (!ignoredNames.isEmpty())) {
+            for (String ignoredName : ignoredNames) {
+                if (name.matches(ignoredName)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public PlanSqlClientNamesStorage() {
     }
 
@@ -146,6 +174,7 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
             selectAllSQL = Utils.tryPropertyNotEmpty(NETBIOS_KEY_SELECT_ALL_SQL);
             deleteSQL = Utils.tryPropertyNotEmpty(NETBIOS_KEY_DELETE_SQL);
             insertSQL = Utils.tryPropertyNotEmpty(NETBIOS_KEY_INSERT_SQL);
+            selectIgnoresSQL = Utils.getProperty(NETBIOS_KEY_SELECT_IGNORES_SQL);
         } catch (IOException ex) {
             initEx = ex;
             Logger.getLogger(PlanSqlClientNamesStorage.class
