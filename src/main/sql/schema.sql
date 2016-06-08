@@ -15,7 +15,6 @@ create table clienthost (
 
 
 drop table if exists  netbiosnames cascade;
-
 create table netbiosnames(
     id int,
     name varchar(255)
@@ -24,3 +23,15 @@ create table netbiosnames(
 alter table netbiosnames add constraint fk_nb_clienthost
                 foreign key (id) 
                 references clienthost on delete cascade;
+
+
+drop table if exists  nbignorednames cascade;
+create table nbignorednames(
+    id serial primary key not null,
+    regex varchar(255) unique
+);
+
+
+insert into nbignorednames(regex) values('AD');
+insert into nbignorednames(regex) values('VKEKR');
+insert into nbignorednames(regex) values('.*MSBROWSE.*');
