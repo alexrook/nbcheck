@@ -5,8 +5,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -30,8 +32,8 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
             NETBIOS_KEY_SELECT_IGNORES_SQL = "netbios.sql.stmt.select.ignores",
             NETBIOS_KEY_DELETE_SQL = "netbios.sql.stmt.delete",
             NETBIOS_KEY_INSERT_SQL = "netbios.sql.stmt.insert";
-            
-        private String selectSQL, selectAllSQL, selectIgnoresSQL, deleteSQL, insertSQL;
+
+    private String selectSQL, selectAllSQL, selectIgnoresSQL, deleteSQL, insertSQL;
 
     @Resource(lookup = "java:jboss/datasources/nbcheckDS")
     DataSource dataSource;
@@ -48,7 +50,7 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
         return getQueryMap(selectAllSQL);
     }
 
-    public Map<Integer, String> getQueryMap(String aSelectSQL)
+    private Map<Integer, String> getQueryMap(String selectSQL)
             throws ClientNamesStorageException {
 
         if (initEx != null) {
@@ -57,7 +59,7 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
 
         Map<Integer, String> ret = new HashMap<>(150);
         try (Connection conn = dataSource.getConnection()) {
-            try (PreparedStatement stmt = conn.prepareStatement(aSelectSQL);) {
+            try (PreparedStatement stmt = conn.prepareStatement(selectSQL);) {
 
                 ResultSet rs = stmt.executeQuery();
                 while (rs.next()) {
@@ -66,11 +68,49 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
 
             } catch (SQLException ex) {
                 throw new ClientNamesStorageException("ClientNamesStorageException while executing "
-                        + aSelectSQL, ex);
+                        + selectSQL, ex);
             }
         } catch (SQLException connEx) {
             throw new ClientNamesStorageException("ClientNamesStorageException unable open jdbc connection "
-                    + aSelectSQL, connEx);
+                    + selectSQL, connEx);
+        }
+
+        return ret;
+    }
+
+    public List<List<String>> getQueryRows(String selectSQL)
+            throws ClientNamesStorageException {
+        if (initEx != null) {
+            throw new ClientNamesStorageException(initEx.getMessage(), initEx);
+        }
+
+        List<List<String>> ret = new ArrayList<>();
+
+        try (Connection conn = dataSource.getConnection()) {
+            try (PreparedStatement stmt = conn.prepareStatement(selectSQL);) {
+
+                ResultSet rs = stmt.executeQuery();
+
+                int columns = rs.getMetaData().getColumnCount();
+
+                while (rs.next()) {
+
+                    List<String> row = new ArrayList<>(columns+1);
+                    for (int i = 1; i < columns+1; i++) {
+                        String val = rs.getObject(i)!=null?rs.getObject(i).toString():"";
+                        row.add(val);//columns starts from 1
+                    }
+
+                    ret.add(row);
+                }
+
+            } catch (SQLException ex) {
+                throw new ClientNamesStorageException("ClientNamesStorageException while executing "
+                        + selectSQL, ex);
+            }
+        } catch (SQLException connEx) {
+            throw new ClientNamesStorageException("ClientNamesStorageException unable open jdbc connection "
+                    + selectSQL, connEx);
         }
 
         return ret;
@@ -104,11 +144,11 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
                     delStmt.addBatch();
 
                     for (String nbName : clientAddressIdToNamesMap.get(id)) {
-                        if (!isIgnoredName(nbName, ignoredNames)){
+                        if (!isIgnoredName(nbName, ignoredNames)) {
                             insStmt.setInt(1, id);
                             insStmt.setString(2, nbName);
                             insStmt.addBatch();
-                        } 
+                        }
                     }
 
                 }
@@ -152,7 +192,7 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
     }
 
     private boolean isIgnoredName(String name, Collection<String> ignoredNames) {
-     
+
         if ((ignoredNames != null) && (!ignoredNames.isEmpty())) {
             for (String ignoredName : ignoredNames) {
                 if (name.matches(ignoredName)) {
