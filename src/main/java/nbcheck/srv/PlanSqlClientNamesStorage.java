@@ -5,10 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -19,6 +17,7 @@ import javax.ejb.Singleton;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.sql.DataSource;
+import nbcheck.srv.QueryRows.QueryRow;
 import nbcheck.std.Utils;
 
 /**
@@ -78,30 +77,33 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
         return ret;
     }
 
-    public List<List<String>> getQueryRows(String selectSQL)
+    @Override
+    public QueryRows getQueryRows(String selectSQL, String queryName)
             throws ClientNamesStorageException {
         if (initEx != null) {
             throw new ClientNamesStorageException(initEx.getMessage(), initEx);
         }
 
-        List<List<String>> ret = new ArrayList<>();
+        QueryRows ret;
 
         try (Connection conn = dataSource.getConnection()) {
             try (PreparedStatement stmt = conn.prepareStatement(selectSQL);) {
 
                 ResultSet rs = stmt.executeQuery();
 
+                ret = new QueryRows(rs.getFetchSize(),//спорно 
+                        rs.getMetaData().getColumnCount());
+
                 int columns = rs.getMetaData().getColumnCount();
 
                 while (rs.next()) {
 
-                    List<String> row = new ArrayList<>(columns+1);
-                    for (int i = 1; i < columns+1; i++) {
-                        String val = rs.getObject(i)!=null?rs.getObject(i).toString():"";
-                        row.add(val);//columns starts from 1
+                    QueryRow row = ret.createRow();
+                    for (int i = 1; i < columns + 1; i++) {
+                        String val = rs.getObject(i) != null ? rs.getObject(i).toString() : "";
+                        row.add(val);
                     }
 
-                    ret.add(row);
                 }
 
             } catch (SQLException ex) {
@@ -112,6 +114,12 @@ public class PlanSqlClientNamesStorage implements IClientNamesStorage {
             throw new ClientNamesStorageException("ClientNamesStorageException unable open jdbc connection "
                     + selectSQL, connEx);
         }
+        
+        ret.setSql(selectSQL);
+
+        ret.setName(queryName);
+        
+        ret.setGenerationDate(new java.util.Date());
 
         return ret;
     }

@@ -1,0 +1,60 @@
+html{
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+    min-width:100%; 
+}
+
+.row:last-child {
+    margin-bottom: 70px;
+}
+footer {
+    width: 100%;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    margin-top: 30px;
+    padding: 15px 30px;
+    color: #999;
+    text-align: left;
+    background-color: #2A2730;
+    border-top: 1px solid #e5e5e5;
+}       
+
+footer>ul {
+    float:right;
+    padding-left: 0px;
+    margin: 0px;
+}
+
+footer>ul li {
+    display: inline-block;
+}
+
+footer p:last-child{
+    margin: 0px;
+}
+
+.link-disabled, .link-disabled:hover, .link-disabled:focus {
+    color: black !important;
+    cursor: default;
+    text-decoration: none;
+}
+
+/* tablesorter jquery-plugin support*/
+.th-glyphicon{
+    color: #337ab7;
+    top: 1px;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: 400;
+}
+
+
+.sortableHeader:hover{
+    cursor:pointer;
+    color: #337ab7;
+    text-decoration: underline;
+}
