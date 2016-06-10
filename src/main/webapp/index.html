@@ -7,6 +7,12 @@
 
         <title>NetBIOS Check</title>
 
+        <script src="//code.jquery.com/jquery-1.12.3.js"></script>
+
+        <script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+
+        <script src="js/main.js"></script>
+
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet"
               href="/css/bootstrap/336/css/bootstrap.min.css">
@@ -21,29 +27,42 @@
     <body>
 
         <nav id="menu" class="navbar navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/" title="Портал">
+                        u.vkekrk.ru
+                    </a>
+                </div>
 
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/" title="Портал">
-                    u.vkekrk.ru
-                </a>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="help.html" class="navbar-link link-disabled">Справка</a></li>
+                </ul>
             </div>
-
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="about.html" class="navbar-link">About</a></li>
-            </ul>
-
         </nav>
 
 
         <div id="main" class="container">
+
             <div class="page-header">
                 <h1>Статус DNS и NetBIOS
                     <small>Текущее разрешение имен рабочих станций в DNS и NetBIOS</small>
                 </h1>
             </div>
-            <pre>
-                TODO
-            </pre>
+
+            <div class="row">
+                <table class="table" id="mainTable">
+                    <caption>Optional table caption.</caption> 
+                    <thead> 
+                        <tr> 
+                            <th>#</th>
+                            <th>IP</th> 
+                            <th>DNS name</th>
+                            <th>NetBIOS names</th> 
+                        </tr> 
+                    </thead> 
+
+                </table>
+            </div>
         </div>
 
         <footer>

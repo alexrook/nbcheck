@@ -58,3 +58,7 @@ footer p:last-child{
     color: #337ab7;
     text-decoration: underline;
 }
+
+.page-header{
+    padding-top: 17px;
+}   
