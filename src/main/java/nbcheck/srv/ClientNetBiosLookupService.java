@@ -36,7 +36,7 @@ public class ClientNetBiosLookupService {
      *
      */
     @Schedule(dayOfWeek = "*", //see http://docs.oracle.com/javaee/6/tutorial/doc/bnboy.html
-            hour = "11",
+            hour = "11,15",
             persistent = false)
     public void lookupNBNames() {
 
