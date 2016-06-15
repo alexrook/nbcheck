@@ -8,7 +8,7 @@
         width:180px; 
         white-space: normal; 
         margin-bottom: 7px;
-        font-size:medium;
+        font-size:small;
 
     }
 
@@ -32,41 +32,11 @@
         padding-right: 1px;
         padding-bottom: 1px;
         padding-top: 1px;
-        font-size:medium;
+        font-size:small;
         font-style: italic;
     }
 
-    .page-footer {
-        padding-top: 9px;
-        margin: 20px 0 40px;
-        border-top: 1px solid #eee;
-
+    section>p:first-child{
+        text-indent:21px;
     }
-    .page-footer p{
-        float: right;
-    }
-
-    ul {
-        font-size: large;
-    }
-
-    tt p {
-        margin: 1px;
-        padding: 1px;
-    }
-
-    section section {
-        margin-left: 15px;
-    }
-
-    #menu {
-        opacity: 0.5; 
-        border: none;
-        font-style: italic;
-    }
-    #menu .container{
-        width: 99%;
-        padding-right: 3px;
-    }
-
 }

@@ -11,8 +11,9 @@
 
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet"
-              href="/css/bootstrap/335/css/bootstrap.min.css">
+              href="/css/bootstrap/336/css/bootstrap.min.css">
 
+        <link rel="stylesheet" href="css/main.css"/>
         <link rel="stylesheet" href="css/help.css"/>
 
         <style>
@@ -30,59 +31,60 @@
         <div id="main" class="container">
             <header class="page-header">
                 <h1>
-                    Статус DNS и NetBIOS
+                    Справочная информация
+                    <small>статус DNS и NetBIOS</small>
                 </h1>
             </header>
+
+            <section class="col-md-12">
+                <dl class="dl-horizontal">
+                    <dt>Что такое NetBIOS?</dt>
+                    <dd>
+                        <blockquote>
+                            Разрешение имени NetBIOS — это процесс определения IP-адреса по имени NetBIOS. 
+                            Имя NetBIOS представляет собой 16-байтовый адрес, используемый для идентификации 
+                            в сети ресурса NetBIOS. Имя NetBIOS может быть либо уникальным (эксклюзивным), 
+                            либо групповым (неэксклюзивным). Когда процесс NetBIOS соединяется с конкретным процессом
+                            на конкретном компьютере, используется уникальное имя. 
+                            Когда процесс NetBIOS соединяется с несколькими процессами на нескольких компьютерах, 
+                            применяется групповое имя.
+                        </blockquote>
+                        <cite>
+                            <a href="https://technet.microsoft.com/ru-ru/library/cc738412(v=ws.10).aspx">
+                                (c)  Microsoft
+                            </a>
+                        </cite>
+                    </dd> 
+
+                    <dt>Что такое DNS?</dt>
+                    <dd>
+                        <blockquote>
+                            DNS (англ. Domain Name System — система доменных имён) — компьютерная распределённая система 
+                            для получения информации о доменах. Чаще всего используется для получения 
+                            IP-адреса по имени хоста (компьютера или устройства), получения информации о маршрутизации почты,
+                            обслуживающих узлах для протоколов в домене. 
+                        </blockquote>
+                        <cite>
+                            <a href="https://ru.wikipedia.org/wiki/DNS">
+                                (c)  Википедиа
+                            </a>
+                        </cite>
+                    </dd> 
+                </dl>
+            </section>
             <article class="row">
-                <section class="col-md-12">
-                    <h2>Справочная информация</h2>
-                    <dl class="dl-horizontal">
 
-                        <dt>Что такое NetBIOS?</dt>
-                        <dd>
-                            <blockquote>
-                                Разрешение имени NetBIOS — это процесс определения IP-адреса по имени NetBIOS. 
-                                Имя NetBIOS представляет собой 16-байтовый адрес, используемый для идентификации 
-                                в сети ресурса NetBIOS. Имя NetBIOS может быть либо уникальным (эксклюзивным), 
-                                либо групповым (неэксклюзивным). Когда процесс NetBIOS соединяется с конкретным процессом
-                                на конкретном компьютере, используется уникальное имя. 
-                                Когда процесс NetBIOS соединяется с несколькими процессами на нескольких компьютерах, 
-                                применяется групповое имя.
-                            </blockquote>
-                            <cite>
-                                <a href="https://technet.microsoft.com/ru-ru/library/cc738412(v=ws.10).aspx">
-                                    (c)  Microsoft
-                                </a>
-                            </cite>
-                        </dd> 
-
-                        <dt>Что такое DNS?</dt>
-                        <dd>
-                            <blockquote>
-                                DNS (англ. Domain Name System — система доменных имён) — компьютерная распределённая система 
-                                для получения информации о доменах. Чаще всего используется для получения 
-                                IP-адреса по имени хоста (компьютера или устройства), получения информации о маршрутизации почты,
-                                обслуживающих узлах для протоколов в домене. 
-                            </blockquote>
-                            <cite>
-                                <a href="https://ru.wikipedia.org/wiki/DNS">
-                                    (c)  Википедиа
-                                </a>
-                            </cite>
-                        </dd> 
-                    </dl>
-                </section>
                 <section class="col-md-12">
                     <p>
                         В процессе накопления статистики использования Интернет через Squid
-                        (<a href="../sqstats">see Squid stats</a>) было обнаруженно, что для некоторых ip-адресов
+                        (<a href="../sqstats">Squid stats</a>) было обнаруженно, что для некоторых ip-адресов
                         DNS-имена не совпадают с NetBIOS-именами. Что может вызвать проблему для клиентского ПО,
-                        с порядком разрешения NetBIOS-имен, 
-                        к примеру, HOSTS, DNS, cache, WINS, BCAST 
-                        (<a href="https://www.samba.org/samba/docs/using_samba/ch07.html">see Samba Name Resolution</a>)
+                        с таким порядком разрешения NetBIOS-имен, 
+                        как, к примеру: HOSTS, DNS, cache, WINS, BCAST 
+                        (<a href="https://www.samba.org/samba/docs/using_samba/ch07.html">Samba Name Resolution</a>)
                     </p>
                     <p>
-                        Причиной может являтся переименование клиентской машины и не внесение соответствующих правок
+                        Причиной может быть переименование клиентской машины и не внесение соответствующих правок
                         в DNS. А также отсутствие в сети развернутого сервера WINS.
                     </p>
                     <p>
@@ -90,24 +92,48 @@
                         периодически запрашивает сеть по методу BCAST (широковещательный запрос) 
                         разрешая ip-адреса в NetBIOS-имена. 
                         Метод BCAST работает для включенных в момент запроса Windows машин получая от них NetBIOS-имя
-                        указанное в System Properties 
-                        (<a href="http://www.howtogeek.com/howto/windows-vista/change-your-computer-name-in-windows-vista/">
-                            к примеру 
-                        </a>)
+                        указанное в  
+                        <a href="http://www.howtogeek.com/howto/windows-vista/change-your-computer-name-in-windows-vista/">
+                            System Properties 
+                        </a>
                     </p>
-                    <p>
-                        Запросы выполняются дважды в день в рабочее время для ip-адресов, 
-                        у которых, приложением, еще на найдено NetBIOS-имя. И, еженедельно в рабочее время,
-                        для всей базы ip-адресов, для синхронизации с сетью.
-                    </p> 
+
+
+                    <figure>
+                        <figcaption>Запросы выполняются:</figcaption>
+                        <ul>
+                            <li>Дважды в день в рабочее время для ip-адресов, 
+                                для которых, приложением, еще на найдено NetBIOS-имя
+                            </li>
+                            <li>
+                                Еженедельно в рабочее время,
+                                для всей базы ip-адресов, для синхронизации с сетью.   
+                            </li>
+                            <li>
+                                Если клиентская машина с искомым ip, в момент запроса
+                                не включена в сеть,
+                                старые данные по этой машине не изменяются.
+                            </li>
+
+                        </ul>
+                    </figure>
+
                     <p>
                         Вниманию администратора предлагается колонка NetBIOS-names.<strong> Для ip-адреса, 
-                        ни одно из NetBIOS-имен которого, не совпадает с DNS-именем (игнорируя регистр букв и домен машины) 
-                        рекомендуется изменить имя клиентской машины, или внести правки в DNS.</strong>
+                            ни одно из NetBIOS-имен которого, не совпадает с DNS-именем (игнорируя регистр букв и домен машины) 
+                            рекомендуется изменить имя клиентской машины, или внести правки в DNS.</strong>
                     </p>
-                    
+
                 </section>
+
             </article>
         </div>
+
+        <footer>
+            <ul>
+                <li><a href="https://github.com/alexrook/nbcheck" title="просмотреть исходный код">GitHub</a></li>
+            </ul>
+            <p>2016 VKEK IT Dept</p>
+        </footer>
     </body>
 </html>
