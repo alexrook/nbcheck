@@ -1,7 +1,7 @@
 'use strict';
 
 var hideNormalCaption_hide = "Отображенно все",
-        hideNormalCaption_show = "Спрятаны не требующие внимания";
+        hideNormalCaption_show = "Спрятанны не требующие внимания";
 
 function getWarn(dnsName, nbNamesString) {
 
