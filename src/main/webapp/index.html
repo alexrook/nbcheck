@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru">
     <head>
+
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>NetBIOS Check</title>
 
-        <script src="//code.jquery.com/jquery-1.12.3.js"></script>
+        <script src="/js/jquery/214/jquery.min.js"></script>
 
-        <script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+        <script src="/js/tablesorter/1/jquery.tablesorter.min.js"></script>
 
         <script src="js/main.js"></script>
 
@@ -18,9 +19,6 @@
               href="/css/bootstrap/336/css/bootstrap.min.css">
 
         <link rel="stylesheet" href="css/main.css"/>
-
-        <style>
-        </style>
 
     </head>
 
@@ -51,8 +49,18 @@
             </div>
 
             <div class="row">
-                <table class="table table-striped" id="mainTable">
-                    <caption><a href="help.html">Что это ?</a></caption> 
+                <table class="table" id="mainTable">
+                    <caption>
+                        <div class="checkbox pull-right">
+                            <label>
+                                <input id="hideNormal" type="checkbox" 
+                                      title="Спрятать не требующие внимания">
+                                <span id="hideNormalCaption">
+                                    Спрятать не требующие внимания  
+                                </span>
+                            </label>
+                        </div>
+                    </caption> 
                     <thead> 
                         <tr> 
                             <th>#</th>
@@ -61,8 +69,9 @@
                             <th>NetBIOS names</th> 
                         </tr> 
                     </thead> 
-
                 </table>
+                <img id="waitImg" class="center-block" src="i/wait.gif"
+                     alt="Download Content-Types">  
             </div>
         </div>
 

@@ -37,6 +37,10 @@ footer p:last-child{
     margin: 0px;
 }
 
+.page-header{
+    padding-top: 17px;
+}   
+
 .link-disabled, .link-disabled:hover, .link-disabled:focus {
     color: black !important;
     cursor: default;
@@ -58,7 +62,3 @@ footer p:last-child{
     color: #337ab7;
     text-decoration: underline;
 }
-
-.page-header{
-    padding-top: 17px;
-}   
