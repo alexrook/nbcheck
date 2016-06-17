@@ -1,4 +1,4 @@
-package nbcheck.srv;
+package nbcheck.srv.storage;
 
 import java.util.Date;
 import java.util.ArrayList;

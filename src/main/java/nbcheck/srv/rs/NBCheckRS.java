@@ -8,8 +8,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import nbcheck.srv.ErrorService;
-import nbcheck.srv.IClientNamesStorage;
-import nbcheck.srv.QueryRows;
+import nbcheck.srv.storage.IClientNamesStorage;
+import nbcheck.srv.storage.QueryRows;
 import nbcheck.std.Utils;
 
 /**

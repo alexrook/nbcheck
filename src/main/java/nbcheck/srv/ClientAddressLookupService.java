@@ -1,5 +1,6 @@
 package nbcheck.srv;
 
+import nbcheck.srv.storage.IClientAddressStorage;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;

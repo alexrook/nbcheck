@@ -1,4 +1,4 @@
-package nbcheck.srv;
+package nbcheck.srv.storage;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -17,7 +17,7 @@ import javax.ejb.Singleton;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.sql.DataSource;
-import nbcheck.srv.QueryRows.QueryRow;
+import nbcheck.srv.storage.QueryRows.QueryRow;
 import nbcheck.std.Utils;
 
 /**

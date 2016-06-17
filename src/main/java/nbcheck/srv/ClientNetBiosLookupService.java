@@ -1,5 +1,6 @@
 package nbcheck.srv;
 
+import nbcheck.srv.storage.IClientNamesStorage;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.HashSet;
