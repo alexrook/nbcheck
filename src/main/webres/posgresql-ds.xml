@@ -3,7 +3,7 @@
 
     <datasource 
 	    jndi-name="java:jboss/datasources/nbcheckDS" 
-	    pool-name="sqstatsDS">
+	    pool-name="nbcheckDS">
         <connection-url>jdbc:postgresql://@db.host@/@db.name@</connection-url>
         <driver>postgresql</driver>
         <security>
