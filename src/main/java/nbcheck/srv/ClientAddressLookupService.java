@@ -93,7 +93,8 @@ public class ClientAddressLookupService {
             } catch (UnknownHostException ex) {
                 String msg = "unknown host exception for address:" + address;
                 errors.addError("ClientAddressStorageException", ex);
-                Logger.getLogger(ClientAddressLookupService.class.getName()).log(Level.SEVERE, msg);
+                Logger.getLogger(ClientAddressLookupService.class.getName())
+                        .log(Level.FINE, msg);
             }
 
         }

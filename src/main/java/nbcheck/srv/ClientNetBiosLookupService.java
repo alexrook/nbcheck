@@ -127,7 +127,8 @@ public class ClientNetBiosLookupService {
                 String msg = "unknown host exception for address:" + address;
                 errors.addError(address,
                         ex);
-                Logger.getLogger(ClientNetBiosLookupService.class.getName()).log(Level.WARNING, msg);
+                Logger.getLogger(ClientNetBiosLookupService.class.getName())
+                        .log(Level.FINE, msg);
             }
 
         }
